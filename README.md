@@ -10,6 +10,5 @@
     - user scopes:
 - Azure
   - Storage Account
-    - Table
     - Queue
-  - Cosmos DB (optional)
+  - Cosmos DB
