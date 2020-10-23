@@ -1,8 +1,24 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 import { parse, ParsedQs } from 'qs';
 import { parseInputs } from '../lib/parsers';
-import { CommandOpts } from './types';
+import { CommandOptions } from './types';
 
+const botToken = process.env.SLACK_TOKEN_BOT;
+const userToken = process.env.SLACK_USER_BOT;
+if (!botToken || !userToken){
+    throw Error(`missing Tokens\n
+                 botToken: ${botToken}
+                 userToken: ${userToken}
+    `)
+}
+
+/**
+ *
+ * @param context
+ * @param req
+ * @param records
+ * @param authUsers
+ */
 export const coinInitTrigger: AzureFunction = async function (context: Context, req: HttpRequest, records: Object[], authUsers: String[]): Promise<void> {
     context.log.info('Function Triggered');
     if (req.rawBody) {
@@ -24,6 +40,11 @@ export const coinInitTrigger: AzureFunction = async function (context: Context, 
     }
 };
 
-export const operationsTrigger: AzureFunction = async function (context: Context, command: CommandOpts): Promise<void> {
+/**
+ *
+ * @param context
+ * @param command
+ */
+export const operationsTrigger: AzureFunction = async function (context: Context, command: CommandOptions): Promise<void> {
     context.log('Queue trigger function processed work item', command);
 };

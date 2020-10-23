@@ -1,6 +1,5 @@
 import { Coins, Operations } from './enums';
-
-import { CommandOpts } from './types';
+import { CommandOptions } from './types';
 
 
 /**
@@ -9,9 +8,9 @@ import { CommandOpts } from './types';
  * @param {string} input
  * @returns {CommandOpts}
  */
-export function parseInputs(input: string): CommandOpts {
+export function parseInputs(input: string): CommandOptions {
     const [target, operation, qty, coinType = Coins.ANDYCOIN] = input.split(" ");
-    
+
     if (!Object.values(Operations).includes(operation as Operations)) {
         throw Error('`add` or `rm` only')
     }
