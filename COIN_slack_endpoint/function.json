@@ -16,22 +16,11 @@
       "name": "res"
     },
     {
-      "type": "cosmosDB",
-      "direction": "in",
-      "name": "records",
-      "databaseName": "kogoe-cosmos-db",
-      "collectionName": "kogoe",
-      "connectionStringSetting": "DB_CONN_STRING",
-      "sqlQuery": "SELECT * FROM c "
-    },
-    {
-      "type": "cosmosDB",
-      "direction": "in",
-      "name": "authUsers",
-      "databaseName": "kogoe-cosmos-db",
-      "collectionName": "kogoe",
-      "connectionStringSetting": "DB_CONN_STRING",
-      "sqlQuery": "SELECT c.id FROM c where c.authorized = true"
+      "type": "queue",
+      "name": "commandDocument",
+      "direction": "out",
+      "queueName": "operations",
+      "connection": "AzureWebJobsStorage"
     }
   ],
   "scriptFile": "../dist/lib/functions.js",

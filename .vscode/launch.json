@@ -7,6 +7,14 @@
       "request": "attach",
       "port": 9229,
       "preLaunchTask": "func: host start"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "test slack calls",
+      "program": "${workspaceFolder}/test.js",
+      "envFile": "${workspaceFolder}/.env",
+      "outputCapture": "std"
     }
   ]
 }

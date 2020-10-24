@@ -1,18 +1,27 @@
 {
   "bindings": [
     {
-      "name": "operation",
+      "name": "command",
       "type": "queueTrigger",
       "direction": "in",
       "queueName": "operations",
       "connection": "AzureWebJobsStorage"
     },
     {
+      "name": "existingRecord",
       "type": "cosmosDB",
-      "direction": "out",
-      "name": "output",
+      "direction": "in",
       "databaseName": "kogoe-cosmos-db",
       "collectionName": "kogoe",
+      "connectionStringSetting": "DB_CONN_STRING",
+      "sqlQuery": "SELECT * FROM c where c.id = {target} and c.type=\"user\""
+    },
+    {
+      "name": "userRecord",
+      "type": "cosmosDB",
+      "direction": "out",
+      "databaseName": "%DB_NAME%",
+      "collectionName": "%COLL_NAME%",
       "createIfNotExists": "false",
       "connectionStringSetting": "DB_CONN_STRING"
     }

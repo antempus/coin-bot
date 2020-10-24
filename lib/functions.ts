@@ -1,14 +1,14 @@
-import { AzureFunction, Context, HttpRequest } from "@azure/functions"
-import { parse, ParsedQs } from 'qs';
-import { parseInputs } from '../lib/parsers';
-import { CommandOptions } from './types';
-
-const botToken = process.env.SLACK_TOKEN_BOT;
-const userToken = process.env.SLACK_USER_BOT;
-if (!botToken || !userToken){
-    throw Error(`missing Tokens\n
-                 botToken: ${botToken}
-                 userToken: ${userToken}
+import { AzureFunction, Context } from "@azure/functions"
+import axios from 'axios'
+import { parseRawBody } from './parsers';
+import { CommandDocument, CommandOptions, UserDocument } from './types';
+const groupId = process.env.group_id
+const botToken = process.env.oauth_token;
+const userToken = process.env.bot_oauth_token;
+const webHook = process.env.web_hook
+if (!botToken || !userToken || !groupId || !webHook){
+    const maskedWebHook = webHook ? 'present' : 'missing'
+    throw Error(`missing Tokens\nbotToken: ${botToken}\nuserToken: ${userToken}\ngroupId: ${groupId}\nwebhook: ${maskedWebHook}
     `)
 }
 
@@ -19,23 +19,23 @@ if (!botToken || !userToken){
  * @param records
  * @param authUsers
  */
-export const coinInitTrigger: AzureFunction = async function (context: Context, req: HttpRequest, records: Object[], authUsers: String[]): Promise<void> {
+export const coinInitTrigger: AzureFunction = async function (context: Context): Promise<void> {
     context.log.info('Function Triggered');
-    if (req.rawBody) {
-        const decodedBody: ParsedQs = parse(req.rawBody);
-        try {
-            context.log.info('parsing input')
-            const commandOpts = parseInputs(decodedBody.text)
-            context.res.body = commandOpts
-        }
-        catch (error) {
-            context.log.error(`parsing error: ${error.message}`)
-            context.res.body = error.message
-        }
+    const { req: { rawBody }, log } = context
+    try{
+        // clean up inputs
+        const commandDocument = parseRawBody(log, rawBody)
+
+        // output to a queue to processing
+        context.bindings.commandDocument = commandDocument
+
+        // set response to user
+        context.res.body = `processing request...`
+
     }
-    else {
+    catch(error){
         context.res = {
-            body: 'missing inputs'
+            body: error.message
         }
     }
 };
@@ -45,6 +45,17 @@ export const coinInitTrigger: AzureFunction = async function (context: Context, 
  * @param context
  * @param command
  */
-export const operationsTrigger: AzureFunction = async function (context: Context, command: CommandOptions): Promise<void> {
-    context.log('Queue trigger function processed work item', command);
+export const operationsTrigger: AzureFunction = async function (context: Context, command: CommandDocument, existingRecord: UserDocument): Promise<void> {
+    context.log('Queue trigger function processed work item', command)
+
+    // build message:
+
+    await axios.post(webHook, { text: `coin operation complete`, attachments: [
+        {
+            text: ` ${command.caller} add/removed ${command.qty} ${command.coinType} from ${command.target}`
+        }
+    ] }).catch(error => {
+        console.error(error);
+        throw error
+    })
 };

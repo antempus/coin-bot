@@ -3,6 +3,10 @@
   "Values": {
     "AzureWebJobsStorage": "<Storage Account Connection String>",
     "FUNCTIONS_WORKER_RUNTIME": "node",
-    "DB_CONN_STRING": "<Cosmos DB Connection String>"
+    "DB_CONN_STRING": "<Cosmos DB Connection String>",
+    "oauth_token": "<oauth token for slack app>",
+    "bot_oauth_token": "<oauth token for slack bot>",
+    "DB_NAME": "<cosmos db name>",
+    "COLL_NAME": "<cosmos collection name>"
   }
 }

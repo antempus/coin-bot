@@ -1,6 +1,6 @@
 export enum Coins {
-    "ANDYCOIN" = "andycoin",
-    "TEDBUCK" = "tedbuck"
+    "ANDYCOIN" = ":andycoin:",
+    "TEDBUCK" = ":ted_bucks:"
 }
 
 export enum Operations {
