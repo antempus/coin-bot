@@ -11,18 +11,21 @@ import { Logger } from '@azure/functions';
  * @returns {CommandOpts}
  */
 export function parseInputs(input: string): CommandOptions {
-    const [dirtyTarget, operation, qty, coinType = Coins.ANDYCOIN] = input.split(" ");
+    const [_target, _operation, qty, _coinType] = input.split(" ");
 
+    // uppercase input
+    const operation = _operation.toUpperCase();
+
+    // set default/uppercase input
+    const coinType = _coinType ? _coinType.toUpperCase() : Coins.ANDYCOIN;
 
     // clean up escaped target
-    const target = dirtyTarget.replace('<',"").replace('>',"").replace('@',"").split('|')[0]
-
-    console.log(target)
-    if (!Object.keys(Operations).includes(operation.toUpperCase() as Operations)) {
-        throw Error('`add` or `rm` only')
+    const target = _target.replace('<',"").replace('>',"").replace('@',"").split('|')[0]
+    if (!Object.keys(Operations).includes(operation as Operations)) {
+        throw Error('`add` or `rm` only');
     }
-    if (!Object.keys(Coins).includes(coinType.toUpperCase() as Coins)) {
-        throw Error('bad coin type')
+    if (!Object.keys(Coins).includes(coinType as Coins)) {
+        throw Error('bad coin type');
     }
     if (!qty) {
         throw Error('qty must be set')
@@ -30,9 +33,9 @@ export function parseInputs(input: string): CommandOptions {
 
     return {
         target,
-        operation: Operations[operation.toUpperCase()],
+        operation: Operations[operation],
         qty: parseInt(qty),
-        coinType: Coins[coinType.toUpperCase()]
+        coinType: Coins[coinType]
     }
 }
 

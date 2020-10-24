@@ -1,7 +1,7 @@
 import { AzureFunction, Context } from "@azure/functions"
 import axios from 'axios'
 import { parseRawBody } from './parsers';
-import { CommandDocument, CommandOptions, UserDocument } from './types';
+import { CommandDocument, UserDocument } from './types';
 const groupId = process.env.group_id
 const botToken = process.env.oauth_token;
 const userToken = process.env.bot_oauth_token;
