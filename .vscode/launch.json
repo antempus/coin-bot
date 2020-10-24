@@ -12,7 +12,7 @@
       "type": "node",
       "request": "launch",
       "name": "test slack calls",
-      "program": "${workspaceFolder}/test.js",
+      "program": "${workspaceFolder}/api_eval/test.js",
       "envFile": "${workspaceFolder}/.env",
       "outputCapture": "std"
     }

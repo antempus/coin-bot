@@ -10,15 +10,16 @@
     "test": "echo \"No tests yet...\""
   },
   "dependencies": {
-    "@slack/web-api": "^5.13.0",
-    "@types/axios": "^0.14.0",
-    "@types/uuid": "^8.3.0",
-    "axios": "^0.21.0",
-    "qs": "^6.9.4",
-    "uuid": "^8.3.1"
+    "@slack/web-api": "5.13.0",
+    "@types/axios": "0.14.0",
+    "@types/uuid": "8.3.0",
+    "axios": "0.21.0",
+    "azure-functions-core-tools": "^3.0.2931",
+    "qs": "6.9.4",
+    "typescript": "3.9.7",
+    "uuid": "8.3.1"
   },
   "devDependencies": {
-    "@azure/functions": "^1.0.2-beta2",
-    "typescript": "^3.3.3"
+    "@azure/functions": "1.0.2-beta2"
   }
 }
