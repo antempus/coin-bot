@@ -23,7 +23,7 @@ if (!botToken || !userToken || !groupId || !webHook) {
  * @param authUsers
  */
 export const coinInitTrigger: AzureFunction = async function (context: Context): Promise<void> {
-    context.log.info('Function Triggered');
+    context.log.info('Bot Function Triggered');
     const { req: { rawBody }, log } = context
     const botClient = new SlackWebClient(botToken, groupId)
     const userClient = new SlackWebClient(userToken, groupId)
@@ -59,7 +59,13 @@ export const coinInitTrigger: AzureFunction = async function (context: Context):
  * @param command
  */
 export const operationsTrigger: AzureFunction = async function (context: Context, command: CommandDocument, existingRecord: UserDocument): Promise<void> {
-    context.log('Queue trigger function processed work item', command)
+    context.log.info('Queue Function Triggered');
+    if (!existingRecord) {
+
+    }
+    else {
+
+    }
 
     // build response
     await axios.post(webHook, {
