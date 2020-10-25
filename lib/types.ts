@@ -17,9 +17,22 @@ export interface CommandDocument extends CommandOptions {
 export interface UserDocument {
     id: string,
     coins: CoinValues[]
+    history: TransactionHistory
 }
 
 export interface CoinValues {
     type: Coins,
     qty: number,
+}
+
+export interface Transactions {
+    user: string,
+    time: number,
+    qty: 12,
+    operation: Operations
+}
+
+export interface TransactionHistory {
+    coin: Coins,
+    transActions: Transactions[]
 }
