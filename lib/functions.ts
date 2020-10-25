@@ -1,12 +1,15 @@
 import { AzureFunction, Context } from "@azure/functions"
 import axios from 'axios'
 import { parseRawBody } from './parsers';
+import { SlackWebClient } from './slack';
 import { CommandDocument, UserDocument } from './types';
+
 const groupId = process.env.group_id
-const botToken = process.env.oauth_token;
-const userToken = process.env.bot_oauth_token;
+const userToken = process.env.oauth_token;
+const botToken = process.env.bot_oauth_token;
 const webHook = process.env.web_hook
-if (!botToken || !userToken || !groupId || !webHook){
+
+if (!botToken || !userToken || !groupId || !webHook) {
     const maskedWebHook = webHook ? 'present' : 'missing'
     throw Error(`missing Tokens\nbotToken: ${botToken}\nuserToken: ${userToken}\ngroupId: ${groupId}\nwebhook: ${maskedWebHook}
     `)
@@ -22,9 +25,19 @@ if (!botToken || !userToken || !groupId || !webHook){
 export const coinInitTrigger: AzureFunction = async function (context: Context): Promise<void> {
     context.log.info('Function Triggered');
     const { req: { rawBody }, log } = context
-    try{
+    const botClient = new SlackWebClient(botToken, groupId)
+    const userClient = new SlackWebClient(userToken, groupId)
+    try {
         // clean up inputs
         const commandDocument = parseRawBody(log, rawBody)
+
+        // check caller isn't targeting themselves
+        const isSelf = await botClient.isTargetSelf(commandDocument.caller, commandDocument.target)
+        if (isSelf) {
+            throw Error('cannot self enrich :disapproval:')
+        }
+
+        await userClient.validateCaller(commandDocument.caller).then(result => { if (!result) throw Error('not an coin admin') }).catch(error => { console.error(error); throw error })
 
         // output to a queue to processing
         context.bindings.commandDocument = commandDocument
@@ -33,7 +46,7 @@ export const coinInitTrigger: AzureFunction = async function (context: Context):
         context.res.body = `processing request...`
 
     }
-    catch(error){
+    catch (error) {
         context.res = {
             body: error.message
         }
@@ -48,13 +61,14 @@ export const coinInitTrigger: AzureFunction = async function (context: Context):
 export const operationsTrigger: AzureFunction = async function (context: Context, command: CommandDocument, existingRecord: UserDocument): Promise<void> {
     context.log('Queue trigger function processed work item', command)
 
-    // build message:
-
-    await axios.post(webHook, { text: `coin operation complete`, attachments: [
-        {
-            text: ` ${command.caller} add/removed ${command.qty} ${command.coinType} from ${command.target}`
-        }
-    ] }).catch(error => {
+    // build response
+    await axios.post(webHook, {
+        text: `coin operation complete`, attachments: [
+            {
+                text: `@${command.caller} ${command.operation} ${command.qty} ${command.coinType} from @${command.target}`
+            }
+        ]
+    }).catch(error => {
         console.error(error);
         throw error
     })
